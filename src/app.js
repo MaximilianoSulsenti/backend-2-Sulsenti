@@ -1,5 +1,4 @@
 import express from "express";
-import mongoose from "mongoose";
 import { Server } from "socket.io";
 import {mongoConnect} from "./database/mongoConnection.js";
 import exphbs from "express-handlebars";
@@ -10,10 +9,10 @@ import { initializePassport } from "./config/passport.js";
 import { env } from "./config/environment.js";
 
 
-// Managers con mongoose
-import ProductManager from "./managers/ProductManager.js";
-import CartManager from "./managers/CartManager.js";
-import UserManager from "./managers/UserManager.js";
+// services de managers 
+import ProductManager from "./services/ProductManager.js";
+import CartManager from "./services/CartManager.js";
+import UserManager from "./services/UserManager.js";
 
 // Routers
 import createProductRouter from "./routes/product.route.js";
