@@ -1,6 +1,6 @@
 import express from "express";
 import { Server } from "socket.io";
-import {mongoConnect} from "./database/mongoConnection.js";
+import mongoSingleton from "./database/mongoConnection.js";
 import exphbs from "express-handlebars";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -58,7 +58,7 @@ const userManager = new UserManager();
 const PORT = env.PORT;
 const httpServer = app.listen(PORT, () =>{
   console.log(`Servidor escuchando en puerto ${PORT}`)
-  mongoConnect().then(() => console.log("Conectado a la base de datos MongoDB"));
+  mongoSingleton.getInstance();
 });
 
 const io = new Server(httpServer);
