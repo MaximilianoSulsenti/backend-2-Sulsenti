@@ -2,10 +2,15 @@ import { Router } from "express";
 import passport from "passport";
 import { authorizeRole } from "../middlewares/auth.js";
 import UsersController from "../controllers/users.controller.js";
+import UsersDAO from "../dao/mongo/users.dao.js";
+import UserManager from "../services/UserManager.js";
 
-export default function createUserRouter(userManager) {
+export default function createUserRouter() {
     const router = Router();
-    const controller = new UsersController(userManager);
+
+    const usersDAO = new UsersDAO();
+    const usersManager = new UserManager(usersDAO);
+    const controller = new UsersController(usersManager);
 
     // GET para obtener todos los usuarios (protegido, solo admin)
     router.get("/", passport.authenticate("current", { session: false }), 

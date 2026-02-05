@@ -1,9 +1,12 @@
-import productModel from "../models/product.model.js";
+//import productModel from "../models/product.model.js";
 
 export default class ProductManager {
+    constructor(productsDAO) {
+        this.productsDAO = productsDAO;
+    }
     
   getProducts() {
-    return productModel.find().lean();
+    return this.productsDAO.getAll();
   }
 
   getProductsPaginated({ limit = 10, page = 1, sort, query }) {
@@ -19,25 +22,24 @@ export default class ProductManager {
         if (sort === "asc") sortOption = { price: 1 };
         if (sort === "desc") sortOption = { price: -1 };
 
-        return productModel.paginate(filter, {limit, page, sort: sortOption, lean: true});
+       return this.productsDAO.getPaginated({ limit, page, sort: sortOption, filter });
 
       }
 
   getProductById(id) {
-    return productModel.findById(id).lean();
+    return this.productsDAO.getById(id);
   }
 
   createProduct(data) {
-    const newProduct = new productModel(data);
-    return newProduct.save();
+    return this.productsDAO.create(data);
   }
 
   updateProduct(id, updatedData) {
-    productModel.findByIdAndUpdate(id, updatedData, { new: true }).lean();
+    return this.productsDAO.update(id, updatedData);
   }
 
   deleteProduct(id) {
-   return productModel.findByIdAndDelete(id);
+   return this.productsDAO.delete(id);
   }
 
 }

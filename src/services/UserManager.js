@@ -1,26 +1,28 @@
-import userModel from "../models/user.model.js";
 
 export default class UserManager {
+    constructor(usersDAO) {
+        this.usersDAO = usersDAO;
+    }
 
     // Obtener todos los usuarios
     async getUsers() {
-        return await userModel.find().lean();
+        return await this.usersDAO.getAll();
     }
 
     // Obtener usuario por ID
     async getUserById(uid) {
-        return await userModel.findById(uid).lean();
+        return await this.usersDAO.getById(uid);
     }
 
     async createUser(userData) {
-        return await userModel.create(userData);
+        return await this.usersDAO.create(userData);
     }
 
     async updateUser(uid, updateData) {
-        return await userModel.findByIdAndUpdate(uid,updateData,{ new: true }).lean();
+        return await this.usersDAO.update(uid, updateData);
     }
 
     async deleteUser(uid) {
-        return await userModel.findByIdAndDelete(uid);
+        return await this.usersDAO.delete(uid);
     }
 }
