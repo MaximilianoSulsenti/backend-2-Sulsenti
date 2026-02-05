@@ -1,0 +1,15 @@
+export default class UpdateUserDTO {
+  constructor(body) {
+    if (body.first_name || body.firstName) {
+      this.first_name = body.first_name || body.firstName;
+    }
+
+    if (body.last_name || body.lastName || body.apellido) {
+      this.last_name = body.last_name || body.lastName || body.apellido;
+    }
+
+    if (body.age !== undefined) {
+      this.age = body.age;
+    }
+  }
+}

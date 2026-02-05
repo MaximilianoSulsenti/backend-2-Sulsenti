@@ -1,9 +1,10 @@
 import { Router } from "express";
 import passport from "passport";
-import { authorizeRole } from "../middlewares/auth.js";
+import { authorize } from "../middlewares/auth.js";
 import UsersController from "../controllers/users.controller.js";
 import UsersDAO from "../dao/mongo/users.dao.js";
 import UserManager from "../services/UserManager.js";
+import { checkUserOwnership } from "../middlewares/ownership.js";
 
 export default function createUserRouter() {
     const router = Router();
@@ -14,17 +15,17 @@ export default function createUserRouter() {
 
     // GET para obtener todos los usuarios (protegido, solo admin)
     router.get("/", passport.authenticate("current", { session: false }), 
-       authorizeRole("admin"),
+       authorize("admin"),
         controller.getUsers
     );
 
-    router.get("/:uid", controller.getUsersById);
+    router.get("/:uid", passport.authenticate("current", { session: false }), controller.getUsersById);
 
     // PUT para actualizar un usuario
-    router.put("/:uid", controller.updateUser);
+    router.put("/:uid", passport.authenticate("current", { session: false }),checkUserOwnership,authorize("user","admin"), controller.updateUser);
 
     // DELETE para eliminar un usuario
-    router.delete("/:uid", controller.deleteUser);
+    router.delete("/:uid", passport.authenticate("current", { session: false }), authorize("admin"), controller.deleteUser);
 
     // POST para crear un nuevo usuario con Passport 
     router.post("/register", (req, res, next) => {

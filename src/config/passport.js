@@ -3,6 +3,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import userModel from "../models/user.model.js";
 import { createHash, isValidPassword } from "../utils/hash.js";
+import CreateUserDTO from "../dto/createUser.dto.js";
 
 
 export function initializePassport() {
@@ -21,12 +22,18 @@ export function initializePassport() {
             if (user) 
                 return done(null, false, { message: "El usuario ya existe" });
 
-            const hashedPassword = createHash(password);
-            const newUser = await userModel.create({
-                ...req.body, password: hashedPassword
-            });
+            const userDTO= new CreateUserDTO(req.body);
 
-            return done(null, newUser);
+            const userData = {
+                ...userDTO,
+                password: createHash(password),
+                role: "user"
+            }
+             
+            const newUser = await userModel.create(userData);
+            
+            return done (null, newUser);
+
         } catch (error) {
             return done(error);
         }
