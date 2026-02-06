@@ -1,12 +1,10 @@
-//import productModel from "../models/product.model.js";
-
 export default class ProductManager {
-    constructor(productsDAO) {
-        this.productsDAO = productsDAO;
+    constructor(productsRepository) {
+        this.productsRepository = productsRepository;
     }
     
   getProducts() {
-    return this.productsDAO.getAll();
+    return this.productsRepository.getAll();
   }
 
   getProductsPaginated({ limit = 10, page = 1, sort, query }) {
@@ -27,19 +25,19 @@ export default class ProductManager {
       }
 
   getProductById(id) {
-    return this.productsDAO.getById(id);
+    return this.productsRepository.getById(id);
   }
 
   createProduct(data) {
-    return this.productsDAO.create(data);
+    return this.productsRepository.create(data);
   }
 
   updateProduct(id, updatedData) {
-    return this.productsDAO.update(id, updatedData);
+    return this.productsRepository.update(id, updatedData);
   }
 
   deleteProduct(id) {
-   return this.productsDAO.delete(id);
+   return this.productsRepository.delete(id);
   }
 
 }

@@ -4,13 +4,15 @@ import { authorize } from "../middlewares/auth.js";
 import UsersController from "../controllers/users.controller.js";
 import UsersDAO from "../dao/mongo/users.dao.js";
 import UserManager from "../services/UserManager.js";
+import UsersRepository from "../repositories/users.repository.js";
 import { checkUserOwnership } from "../middlewares/ownership.js";
 
 export default function createUserRouter() {
     const router = Router();
 
     const usersDAO = new UsersDAO();
-    const usersManager = new UserManager(usersDAO);
+    const usersRepository = new UsersRepository(usersDAO);
+    const usersManager = new UserManager(usersRepository);
     const controller = new UsersController(usersManager);
 
     // GET para obtener todos los usuarios (protegido, solo admin)

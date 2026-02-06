@@ -2,12 +2,14 @@ import { Router } from "express";
 import CartsController from "../controllers/carts.controller.js";
 import CartsDAO from "../dao/mongo/carts.dao.js";
 import CartManager from "../services/CartManager.js";
+import CartsRepository from "../repositories/carts.repository.js";
 
 export default function createCartRouter() {
     const router = Router();
 
     const cartsDAO = new CartsDAO();
-    const cartManager = new CartManager(cartsDAO);
+    const cartsRepository = new CartsRepository(cartsDAO);
+    const cartManager = new CartManager(cartsRepository);
     const Controller = new CartsController(cartManager);
 
     // Crear carrito

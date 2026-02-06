@@ -1,5 +1,6 @@
 import express from "express";
 import { Server } from "socket.io";
+import cors from "cors";
 import mongoSingleton from "./config/database/mongoConnection.js";
 import exphbs from "express-handlebars";
 import path from "path";
@@ -7,6 +8,7 @@ import { fileURLToPath } from "url";
 import passport from "passport";
 import { initializePassport } from "./config/passport.js";
 import { env } from "./config/environment.js";
+import nodemailer from "nodemailer";
 
 
 // services de managers 
@@ -49,6 +51,8 @@ const hbs = exphbs.create({
 app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
 app.set("views", path.join(__dirname, "views"));
+
+app.use(cors());
 
 const productManager = new ProductManager();
 const cartManager = new CartManager();

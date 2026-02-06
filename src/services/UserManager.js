@@ -1,28 +1,28 @@
 
 export default class UserManager {
-    constructor(usersDAO) {
-        this.usersDAO = usersDAO;
+    constructor(repository) {
+        this.repository = repository;
     }
 
     // Obtener todos los usuarios
     async getUsers() {
-        return await this.usersDAO.getAll();
+        return await this.repository.getUsers();
     }
 
     // Obtener usuario por ID
     async getUserById(uid) {
-        return await this.usersDAO.getById(uid);
+        return await this.repository.getUserById(uid);
     }
 
     async createUser(userData) {
-        return await this.usersDAO.create(userData);
+        return await this.repository.createUser(userData);
     }
 
     async updateUser(uid, updateData) {
-        return await this.usersDAO.update(uid, updateData);
+        return await this.repository.updateUser(uid, updateData);
     }
 
     async deleteUser(uid) {
-        return await this.usersDAO.delete(uid);
+        return await this.repository.deleteUser(uid);
     }
 }
