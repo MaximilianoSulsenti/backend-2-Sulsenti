@@ -1,6 +1,6 @@
 import express from "express";
 import { Server } from "socket.io";
-import mongoSingleton from "./database/mongoConnection.js";
+import mongoSingleton from "./config/database/mongoConnection.js";
 import exphbs from "express-handlebars";
 import path from "path";
 import { fileURLToPath } from "url";
