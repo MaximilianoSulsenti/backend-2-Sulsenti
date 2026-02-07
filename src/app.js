@@ -8,13 +8,12 @@ import { fileURLToPath } from "url";
 import passport from "passport";
 import { initializePassport } from "./config/passport.js";
 import { env } from "./config/environment.js";
-import nodemailer from "nodemailer";
 
 
-// services de managers 
-import ProductManager from "./services/ProductManager.js";
-import CartManager from "./services/CartManager.js";
-import UserManager from "./services/UserManager.js";
+// Services
+import ProductService from "./services/product.service.js";
+import CartService from "./services/cart.service.js";
+import UserService from "./services/user.service.js";
 
 // Routers
 import createProductRouter from "./routes/product.route.js";
@@ -22,6 +21,7 @@ import createCartRouter from "./routes/cart.route.js";
 import createViewsRouter from "./routes/view.route.js";
 import createUserRouter from "./routes/user.route.js";
 import sessionRouter from "./routes/sessions.route.js";
+import passwordResetRouter from "./routes/passwordReset.route.js";
 
 // Definiciones de __dirname y __filename en ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -54,9 +54,9 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(cors());
 
-const productManager = new ProductManager();
-const cartManager = new CartManager();
-const userManager = new UserManager();
+const productService = new ProductService();
+const cartService = new CartService();
+const userService = new UserService();
 
 // conexion del servidor
 const PORT = env.PORT;
@@ -68,26 +68,27 @@ const httpServer = app.listen(PORT, () =>{
 const io = new Server(httpServer);
 
 // rutas con los managers correspondientes
-app.use("/api/products", createProductRouter(productManager, io));
-app.use("/api/carts", createCartRouter(cartManager, productManager));
-app.use("/api/users", createUserRouter(userManager));
-app.use("/", createViewsRouter(productManager, cartManager));
+app.use("/api/products", createProductRouter(productService, io));
+app.use("/api/carts", createCartRouter(cartService, productService));
+app.use("/api/users", createUserRouter(userService));
+app.use("/", createViewsRouter(productService, cartService));
 app.use("/api/sessions", sessionRouter);
+app.use("/api/password", passwordResetRouter);
 
  // Socket.io para productos en tiempo real
  io.on("connection", async socket => {
   console.log("Cliente conectado:", socket.id);
 
   // Enviar lista inicial desde Mongo
-  socket.emit("productos_actualizados", await productManager.getProducts());
+  socket.emit("productos_actualizados", await productService.getProducts());
 
   socket.on("nuevo_producto", async data => {
-    await productManager.addProduct(data);
-    io.emit("productos_actualizados", await productManager.getProducts());
+    await productService.createProduct(data);
+    io.emit("productos_actualizados", await productService.getProducts());
   });
 
   socket.on("eliminar_producto", async id => {
-    await productManager.deleteProduct(id);
-    io.emit("productos_actualizados", await productManager.getProducts());
+    await productService.deleteProduct(id);
+    io.emit("productos_actualizados", await productService.getProducts());
   });
 });

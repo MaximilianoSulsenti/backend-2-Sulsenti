@@ -1,4 +1,4 @@
-export default class ProductManager {
+export default class ProductService {
     constructor(productsRepository) {
         this.productsRepository = productsRepository;
     }

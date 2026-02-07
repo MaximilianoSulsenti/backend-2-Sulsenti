@@ -1,12 +1,12 @@
 import { Router } from "express";
 
-export default function createViewsRouter(productManager, cartManager) {
+export default function createViewsRouter(productService, cartService) {
     const router = Router();
 
     // Vista principal con lista de productos
     router.get("/", async (req, res) => {
         try {
-            const productos = await productManager.getProducts();
+            const productos = await productService.getProducts();
             res.render("home", { productos });
         } catch (error) {
             res.status(500).send("Error al cargar productos");
@@ -27,7 +27,7 @@ export default function createViewsRouter(productManager, cartManager) {
             const sort = req.query.sort;
             const query = req.query.query;
 
-            const result = await productManager.getProductsPaginated({limit, page, sort, query});
+            const result = await productService.getProductsPaginated({limit, page, sort, query});
 
          // Renderiza la vista products.handlebars
             res.render("products", {
@@ -53,7 +53,7 @@ export default function createViewsRouter(productManager, cartManager) {
            try {
                const cartId = req.params.cid;
        
-               const cart = await cartManager.getCartById(cartId); 
+               const cart = await cartService.getCartById(cartId); 
                if (!cart) return res.status(404).send("Carrito no encontrado");
        
                res.render("cart", {
@@ -70,13 +70,13 @@ export default function createViewsRouter(productManager, cartManager) {
              // Renderizar vista del carrito
         router.get("/:cartId/view", async (req, res) => {
             try {
-                const cart = await cartManager.getCartById(req.params.cartId);
+                const cart = await cartService.getCartById(req.params.cartId);
         
                 if (!cart)
                     return res.status(404).send("Carrito no encontrado");
         
                 for (let item of cart.productos) {
-                    const product = await cartManager.getProductById(item.product);
+                    const product = await cartService.getProductById(item.product);
                     item.product = product;
                 }
         
@@ -97,5 +97,7 @@ export default function createViewsRouter(productManager, cartManager) {
             }
         });
 
+
+    
       return router;
   }

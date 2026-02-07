@@ -3,7 +3,7 @@ import passport from "passport";
 import { authorize } from "../middlewares/auth.js";
 import UsersController from "../controllers/users.controller.js";
 import UsersDAO from "../dao/mongo/users.dao.js";
-import UserManager from "../services/UserManager.js";
+import UserService from "../services/user.service.js";
 import UsersRepository from "../repositories/users.repository.js";
 import { checkUserOwnership } from "../middlewares/ownership.js";
 
@@ -12,8 +12,8 @@ export default function createUserRouter() {
 
     const usersDAO = new UsersDAO();
     const usersRepository = new UsersRepository(usersDAO);
-    const usersManager = new UserManager(usersRepository);
-    const controller = new UsersController(usersManager);
+    const usersService = new UserService(usersRepository);
+    const controller = new UsersController(usersService);
 
     // GET para obtener todos los usuarios (protegido, solo admin)
     router.get("/", passport.authenticate("current", { session: false }), 
@@ -21,7 +21,7 @@ export default function createUserRouter() {
         controller.getUsers
     );
 
-    router.get("/:uid", passport.authenticate("current", { session: false }), controller.getUsersById);
+    router.get("/:uid", passport.authenticate("current", { session: false }), controller.getUserById);
 
     // PUT para actualizar un usuario
     router.put("/:uid", passport.authenticate("current", { session: false }),checkUserOwnership,authorize("user","admin"), controller.updateUser);

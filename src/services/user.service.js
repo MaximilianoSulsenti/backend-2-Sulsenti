@@ -1,5 +1,5 @@
 
-export default class UserManager {
+export default class UserService {
     constructor(repository) {
         this.repository = repository;
     }
@@ -12,6 +12,10 @@ export default class UserManager {
     // Obtener usuario por ID
     async getUserById(uid) {
         return await this.repository.getUserById(uid);
+    }
+
+    async getByEmail(email) {
+        return await this.repository.getByEmail(email);
     }
 
     async createUser(userData) {

@@ -6,9 +6,13 @@ export default class UsersDAO {
         return userModel.find().lean();
     };
 
-    getById = async (uid) => {
+    getUserById = async (uid) => {
         return userModel.findById(uid).lean();
     };
+
+    getByEmail = async (email) => {
+        return userModel.findOne({email}).lean();
+    }
 
     create = async (userData) => {
         return userModel.create(userData);

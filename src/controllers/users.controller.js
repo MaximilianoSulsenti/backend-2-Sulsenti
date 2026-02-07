@@ -7,13 +7,13 @@ import UserResponseDTO from "../dto/userResponse.dto.js";
 import {createHash} from "../utils/hash.js"
 
 export default class UsersController{
-    constructor(userManager){
-        this.userManager = userManager;
+    constructor(userService){
+        this.userService = userService;
     }
 
     getUsers =  async (req, res) => {
         try {
-            const users = await this.userManager.getUsers();
+            const users = await this.userService.getUsers();
 
             const usersDTO = users.map(user => new UserResponseDTO(user));
 
@@ -23,9 +23,9 @@ export default class UsersController{
         }
     };
 
-    getUsersById = async (req, res) => {
+    getUserById = async (req, res) => {
         try {
-            const user = await this.userManager.getUserById(req.params.uid);
+            const user = await this.userService.getUserById(req.params.uid);
             if (!user) {
                 return res.status(404).json({ status: "error", error: "Usuario no encontrado" });
             }
@@ -50,7 +50,7 @@ export default class UsersController{
             };
 
             //crear el usuario a través del manager
-            const newUser = await this.userManager.createUser(userData);
+            const newUser = await this.userService.createUser(userData);
             res.status(201).json({ status: "success", payload: newUser });
 
         } catch (error) {
@@ -68,7 +68,7 @@ export default class UsersController{
                   return res.status(400).json({ status: "error", error: "No hay campos para actualizar" });
               }
 
-            const updatedUser = await this.userManager.updateUser(req.params.uid, dto);
+            const updatedUser = await this.userService.updateUser(req.params.uid, dto);
             if (!updatedUser) {
                 return res.status(404).json({ status: "error", error: "Usuario no encontrado" });
             }
@@ -80,7 +80,7 @@ export default class UsersController{
 
     deleteUser = async (req, res) => {
         try {
-            const deletedUser = await this.userManager.deleteUser(req.params.uid);
+            const deletedUser = await this.userService.deleteUser(req.params.uid);
             if (!deletedUser) {
                 return res.status(404).json({ status: "error", error: "Usuario no encontrado" });
             }

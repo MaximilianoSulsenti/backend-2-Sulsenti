@@ -1,11 +1,11 @@
 export default class CartsController {
-    constructor(cartManager) {
-        this.cartManager = cartManager;
+    constructor(cartService) {
+        this.cartService = cartService;
     }
 
   createCart = async (req, res) => {
         try {
-            const cart = await this.cartManager.createCart();
+            const cart = await this.cartService.createCart();
             res.status(201).json({ message: "Carrito creado", payload: cart });
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -14,7 +14,7 @@ export default class CartsController {
 
     getCartById =  async (req, res) => {
         try {
-            const cart = await this.cartManager.getCartById(req.params.cartId);
+            const cart = await this.cartService.getCartById(req.params.cartId);
 
             if (!cart)
                 return res.status(404).json({ msg: "Carrito no encontrado" });
@@ -27,7 +27,7 @@ export default class CartsController {
 
     addProductToCart = async (req, res) => {
         try {
-            const cart = await this.cartManager.addProductToCart(req.params.cartId, req.params.productId);
+            const cart = await this.cartService.addProductToCart(req.params.cartId, req.params.productId);
 
             if (!cart)
                 return res.status(404).json({ msg: "Carrito o producto no encontrado" });
@@ -40,7 +40,7 @@ export default class CartsController {
 
     updateCartProducts = async (req, res) => {
         try{
-            const cart = await this.cartManager.updateCartProducts(req.params.cartId, req.body.products);
+            const cart = await this.cartService.updateCartProducts(req.params.cartId, req.body.products);
             if(!cart)
                 return res.status(404).json({msg: "Carrito no encontrado"});
 
@@ -52,7 +52,7 @@ export default class CartsController {
 
     updateProductQuantity = async (req, res) => {
         try{
-             const cart = await this.cartManager.updateProductQuantity(req.params.cartId, req.params.productId, req.body.quantity); 
+             const cart = await this.cartService.updateProductQuantity(req.params.cartId, req.params.productId, req.body.quantity); 
 
             if(!cart)
                 return res.status(404).json({msg: "Carrito no encontrado"});
@@ -66,7 +66,7 @@ export default class CartsController {
 
     deleteProductFromCart = async (req, res) => {
         try {
-            const cart = await this.cartManager.deleteProductFromCart(req.params.cartId, req.params.productId);
+            const cart = await this.cartService.deleteProductFromCart(req.params.cartId, req.params.productId);
             if (!cart)
                 return res.status(404).json({msg: "carrito no encontrado"});
 
@@ -79,7 +79,7 @@ export default class CartsController {
 
     clearCart = async (req, res) => {
         try {
-            const cart = await this.cartManager.clearCart(req.params.cartId);
+            const cart = await this.cartService.clearCart(req.params.cartId);
             if (!cart)
                 return res.status(404).json({msg: "carrito no encontrado"});
 

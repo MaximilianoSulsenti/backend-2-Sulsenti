@@ -4,5 +4,9 @@ config();
 export const env = {
     MONGO_URI: process.env.MONGO_URI,
     PORT: process.env.PORT,
-    SECRET_KEY: process.env.SECRET_KEY
-}
+    SECRET_KEY: process.env.SECRET_KEY,
+    MAIL_USER: process.env.MAIL_USER,
+    MAIL_PASS: process.env.MAIL_PASS,
+    MAIL_FROM: process.env.MAIL_FROM,
+    BACKEND_URL: process.env.BACKEND_URL
+};

@@ -1,4 +1,4 @@
-export default class CartManager {
+export default class CartService {
       constructor(cartsRepository) {
         this.cartsRepository = cartsRepository;
       }

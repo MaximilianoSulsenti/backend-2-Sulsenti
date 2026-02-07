@@ -3,6 +3,7 @@ export default class CurrentUserDTO {
     this.first_name = user.first_name;
     this.email = user.email;
     this.role = user.role;
-    this.cart = user.cart;
+    // Convertir el ObjectId del carrito a string, o asignar null si no existe
+    this.cart = user.cart?.toString?.() || user.cart|| null;
   }
 }
