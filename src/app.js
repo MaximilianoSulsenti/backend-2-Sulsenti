@@ -8,9 +8,19 @@ import { fileURLToPath } from "url";
 import passport from "passport";
 import { initializePassport } from "./config/passport.js";
 import { env } from "./config/environment.js";
+import initProductSocket from "./sockets/product.socket.js";
 
+// DAO
+import ProductsDAO from "./dao/mongo/products.dao.js";
+import CartsDAO from "./dao/mongo/carts.dao.js";
+import UsersDAO from "./dao/mongo/users.dao.js";
 
-// Services
+//Repositories
+import ProductsRepository from "./repositories/products.repository.js";
+import CartsRepository from "./repositories/carts.repository.js";
+import UsersRepository from "./repositories/users.repository.js";
+
+//Services
 import ProductService from "./services/product.service.js";
 import CartService from "./services/cart.service.js";
 import UserService from "./services/user.service.js";
@@ -28,6 +38,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -52,11 +64,19 @@ app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
 app.set("views", path.join(__dirname, "views"));
 
-app.use(cors());
+// Instanciación de DAOs, Repositories y Services para productos, carritos y usuarios
+const productsDAO = new ProductsDAO();
+const productsRepository = new ProductsRepository(productsDAO);
+const productService = new ProductService(productsRepository);
 
-const productService = new ProductService();
-const cartService = new CartService();
-const userService = new UserService();
+const cartsDAO = new CartsDAO();
+const cartsRepository = new CartsRepository(cartsDAO);
+const cartService = new CartService(cartsRepository, productsRepository);
+
+const usersDAO = new UsersDAO();
+const usersRepository = new UsersRepository(usersDAO);
+const userService = new UserService(usersRepository);
+
 
 // conexion del servidor
 const PORT = env.PORT;
@@ -75,20 +95,4 @@ app.use("/", createViewsRouter(productService, cartService));
 app.use("/api/sessions", sessionRouter);
 app.use("/api/password", passwordResetRouter);
 
- // Socket.io para productos en tiempo real
- io.on("connection", async socket => {
-  console.log("Cliente conectado:", socket.id);
-
-  // Enviar lista inicial desde Mongo
-  socket.emit("productos_actualizados", await productService.getProducts());
-
-  socket.on("nuevo_producto", async data => {
-    await productService.createProduct(data);
-    io.emit("productos_actualizados", await productService.getProducts());
-  });
-
-  socket.on("eliminar_producto", async id => {
-    await productService.deleteProduct(id);
-    io.emit("productos_actualizados", await productService.getProducts());
-  });
-});
+ initProductSocket(io, productService);

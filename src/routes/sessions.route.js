@@ -12,18 +12,17 @@ router.post("/login", passport.authenticate("login", { session: false }), (req, 
     res.status(200).json({ status: "success", payload: { token } });
 });
 
+
 router.get("/current", passport.authenticate("current", { session: false }), (req, res) => {
     
     res.status(200).json({ status: "success", payload: new CurrentUserDTO(req.user) });
 });
 
-router.get("/logout", (req, res) => {
-    req.logout((err) => {
-        if (err) {
-            return res.status(500).json({ status: "error", message: "fallo al cerrar sesión" });
 
-        }
-        res.status(200).json({ status: "success", message: "logout exitoso" });
-    });});
+router.post("/logout", (req, res) => {
+
+    res.status(200).json({ status: "success", message: "Logout exitoso (token invalidado en cliente)"});
+});
+
     
 export default router;

@@ -20,7 +20,7 @@ export default class ProductService {
         if (sort === "asc") sortOption = { price: 1 };
         if (sort === "desc") sortOption = { price: -1 };
 
-       return this.productsDAO.getPaginated({ limit, page, sort: sortOption, filter });
+       return this.productsRepository.getPaginated({ limit, page, sort: sortOption, filter });
 
       }
 
