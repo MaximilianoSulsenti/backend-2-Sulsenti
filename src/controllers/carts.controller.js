@@ -27,7 +27,9 @@ export default class CartsController {
 
     addProductToCart = async (req, res) => {
         try {
-            const cart = await this.cartService.addProductToCart(req.params.cartId, req.params.productId);
+            const { quantity } = req.body;
+        
+            const cart = await this.cartService.addProductToCart(req.params.cartId, req.params.productId, quantity);
 
             if (!cart)
                 return res.status(404).json({ msg: "Carrito o producto no encontrado" });
@@ -88,5 +90,27 @@ export default class CartsController {
             res.status(500).json({error: error.message});
         }
     };
+
+    purchaseCart = async (req, res) => {
+        try {
+            const { cartId } = req.params;
+            const purchaser = req.user?.email || "test@purchase.com";
+
+            const result = await this.cartService.purchaseCart(cartId, purchaser);
+
+            return res.status(200).json({
+                status: "success",
+                payload: {
+                    ticket: result.ticket,
+                    productsNotProcessed: result.notProcessed
+                }
+            });
+
+        } catch (error) {
+            console.error("Error en purchaseCart:", error);
+            res.status(500).json({ status: "error", error: error.message });
+        }
+    };
+
 
 }

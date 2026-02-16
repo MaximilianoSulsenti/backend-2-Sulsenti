@@ -7,10 +7,11 @@ export const authorize = (...allowedRoles) => {
       });
     }
 
-    if (
-      allowedRoles.length &&
-      !allowedRoles.includes(req.user.role)
-    ) {
+    // normalizamos roles
+    const userRole = req.user.role?.toLowerCase();
+    const rolesAllowed = allowedRoles.map(r => r.toLowerCase());
+
+    if (rolesAllowed.length && !rolesAllowed.includes(userRole)) {
       return res.status(403).json({
         status: "error",
         error: "Acceso denegado"

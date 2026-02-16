@@ -1,25 +1,26 @@
 import { Router } from "express";
+import passport from "passport";
 import ProductsController from "../controllers/products.controller.js";
 import ProductService from "../services/product.service.js";
 import ProductsDAO from "../dao/mongo/products.dao.js";
 import ProductsRepository from "../repositories/products.repository.js";
 import { authorize } from "../middlewares/auth.js";
 
-export default function createProductRouter(io) {
+export default function createProductRouter() {
     const router = Router();
     
     const productsDAO = new ProductsDAO();
     const productsRepository = new ProductsRepository(productsDAO);
     const productService = new ProductService(productsRepository);
-    const controller = new ProductsController(productService, io);
+    const controller = new ProductsController(productService, null);
 
   // GET productos con paginación, filtros y orden
-    router.get("/", authorize("admin"), controller.getProducts);
+    router.get("/", passport.authenticate("current", { session: false }), authorize("admin"), controller.getProducts);
     
     router.get("/:productId", controller.getProductById);
-    router.post("/", authorize("admin"), controller.createProduct);
-    router.put("/:productId", authorize("admin"), controller.updateProduct);
-    router.delete("/:productId", authorize("admin"), controller.deleteProduct);
+    router.post("/", passport.authenticate("current", { session: false }), authorize("user", "admin"), controller.createProduct);
+    router.put("/:productId", passport.authenticate("current", { session: false }), authorize("admin"), controller.updateProduct);
+    router.delete("/:productId", passport.authenticate("current", { session: false }), authorize("admin"), controller.deleteProduct);
 
     return router;
 }

@@ -11,25 +11,27 @@ export default class CartsDAO {
         return cartModel.findById(cartId).populate("productos.product").lean();
     }
 
-    createCart() {
-        return cartModel.create({ productos: [] });
+    async createCart() {
+        return await cartModel.create({ productos: [] });
     }
 
-    async addProductToCart(cartId, productId) {
+    async addProductToCart(cartId, productId, quantity = 1) {
         const cart = await cartModel.findById(cartId);
         if (!cart) return null;
 
         const productExists = await productModel.findById(productId);
         if (!productExists) return null;
 
+        const  qty = Number(quantity) || 1;
+
         const productInCart = cart.productos.find(
             p => p.product.toString() === productId.toString()
         );
 
         if (productInCart) {
-            productInCart.quantity += 1;
+            productInCart.quantity += qty;
         } else {
-            cart.productos.push({ product: productId, quantity: 1 });
+            cart.productos.push({ product: productId, quantity: qty });
         }
 
         await cart.save();

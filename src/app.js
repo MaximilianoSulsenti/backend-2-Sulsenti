@@ -14,16 +14,19 @@ import initProductSocket from "./sockets/product.socket.js";
 import ProductsDAO from "./dao/mongo/products.dao.js";
 import CartsDAO from "./dao/mongo/carts.dao.js";
 import UsersDAO from "./dao/mongo/users.dao.js";
+import TicketDAO from "./dao/mongo/ticket.dao.js";
 
 //Repositories
 import ProductsRepository from "./repositories/products.repository.js";
 import CartsRepository from "./repositories/carts.repository.js";
 import UsersRepository from "./repositories/users.repository.js";
+import TicketRepository from "./repositories/ticket.repository.js";
 
 //Services
 import ProductService from "./services/product.service.js";
 import CartService from "./services/cart.service.js";
 import UserService from "./services/user.service.js";
+import TicketService from "./services/ticket.service.js";
 
 // Routers
 import createProductRouter from "./routes/product.route.js";
@@ -77,6 +80,9 @@ const usersDAO = new UsersDAO();
 const usersRepository = new UsersRepository(usersDAO);
 const userService = new UserService(usersRepository);
 
+const ticketDAO = new TicketDAO();
+const ticketRepository = new TicketRepository(ticketDAO);
+const ticketService = new TicketService(ticketRepository);
 
 // conexion del servidor
 const PORT = env.PORT;
@@ -89,7 +95,7 @@ const io = new Server(httpServer);
 
 // rutas con los managers correspondientes
 app.use("/api/products", createProductRouter(productService, io));
-app.use("/api/carts", createCartRouter(cartService, productService));
+app.use("/api/carts", createCartRouter(cartService, productService, ticketService));
 app.use("/api/users", createUserRouter(userService));
 app.use("/", createViewsRouter(productService, cartService));
 app.use("/api/sessions", sessionRouter);

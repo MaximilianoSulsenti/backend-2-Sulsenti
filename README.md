@@ -65,67 +65,81 @@ npm run dev
 El servidor estará disponible en `http://localhost:8080`
 
 ## 📁 Estructura del Proyecto
-
 ```
+package.json
+README.md
 src/
-├── app.js                    # Configuración principal de Express
+├── app.js                                  # Configuración principal de Express
 ├── config/
-│   ├── environment.js        # Variables de entorno
-│   ├── passport.js           # Estrategias de autenticación
+│   ├── environment.js                      # Variables de entorno
+│   ├── passport.js                         # Estrategias de autenticación
 │   └── database/
-│       └── mongoConnection.js # Conexión a MongoDB
-├── controllers/              # Lógica de negocio de rutas
+│       └── mongoConnection.js              # Conexión a MongoDB (Singleton)
+├── controllers/                            # Lógica de negocio de rutas
 │   ├── products.controller.js
 │   ├── carts.controller.js
 │   ├── users.controller.js
 │   └── passwordReset.controller.js
-├── dao/                      # Acceso a datos (Data Access Objects)
+├── dao/                                    # Acceso a datos (Data Access Objects)
 │   └── mongo/
 │       ├── products.dao.js
 │       ├── carts.dao.js
 │       ├── users.dao.js
 │       └── passwordReset.dao.js
-├── dto/                      # Data Transfer Objects (validación)
+├── dto/                                    # Data Transfer Objects (validación)
+│   ├── adminUpdateUser.dto.js
+│   ├── adminUser.dto.js
 │   ├── createUser.dto.js
-│   ├── updateUser.dto.js
 │   ├── currentUser.dto.js
-│   └── user.dto.js
-├── middlewares/              # Middlewares personalizados
-│   ├── auth.js              # Autenticación
-│   └── ownership.js         # Verificación de propiedad
-├── models/                   # Esquemas de Mongoose
+│   ├── updateUser.dto.js
+│   ├── user.dto.js
+│   └── userResponse.dto.js
+├── middlewares/                            # Middlewares personalizados
+│   ├── auth.js                             # Autenticación
+│   └── ownership.js                        # Verificación de propiedad
+├── models/                                 # Esquemas de Mongoose
 │   ├── user.model.js
 │   ├── product.model.js
 │   ├── cart.model.js
-│   └── passwordReset.model.js
-├── repositories/             # Capa de repositorio
+│   ├── passwordReset.model.js
+│   └── ticket.model.js                     # (si implementas tickets en DB)
+├── repositories/                           # Capa de repositorio
 │   ├── users.repository.js
 │   ├── products.repository.js
 │   ├── carts.repository.js
-│   └── passwordReset.repository.js
-├── routes/                   # Definición de rutas
+│   ├── passwordReset.repository.js
+│   └── tickets.repository.js               # (opcional)
+├── routes/                                 # Definición de rutas
 │   ├── user.route.js
 │   ├── product.route.js
 │   ├── cart.route.js
 │   ├── sessions.route.js
 │   ├── passwordReset.route.js
-│   └── view.route.js
-├── services/                 # Lógica de negocio
+│   ├── view.route.js
+│   └── ticket.route.js                     # (opcional)
+├── services/                               # Lógica de negocio
 │   ├── user.service.js
 │   ├── product.service.js
 │   ├── cart.service.js
 │   ├── mail.service.js
-│   └── passwordReset.service.js
-├── utils/                    # Funciones auxiliares
-│   ├── hash.js              # Hash de contraseñas
-│   └── jwt.js               # Tokens JWT
-└── views/                    # Vistas Handlebars
-    ├── home.handlebars
-    ├── products.handlebars
-    ├── cart.handlebars
-    ├── realtimeproducts.handlebars
-    └── layouts/
-        └── main.handlebars
+│   ├── passwordReset.service.js
+│   └── ticket.service.js                   # (checkout, creación de ticket)
+├── utils/                                  # Funciones auxiliares
+│   ├── hash.js                             # Hash de contraseñas
+│   └── jwt.js                              # Tokens JWT
+├── public/                                 # Archivos públicos y frontend estático
+│   └── js/
+│       └── realTimeProducts.js
+├── views/                                  # Vistas Handlebars
+│   ├── cart.handlebars
+│   ├── home.handlebars
+│   ├── products.handlebars
+│   ├── realtimeproducts.handlebars
+│   └── layouts/
+│       └── main.handlebars
+tests/
+└── test/
+    └── sessions.test.js
 ```
 
 ## 🔌 Endpoints Principales
@@ -245,6 +259,48 @@ Los usuarios pueden solicitar la recuperación de contraseña mediante email. El
 
 ### Paginación
 Al listar productos se implementa paginación automática con `mongoose-paginate-v2` para mejorar el rendimiento.
+
+## 🧾 Compra y Lógica de Ticket
+
+Descripción: al confirmar una compra (ej. endpoint de "checkout"), el servidor debe validar stock, calcular el monto total, generar un registro de ticket y actualizar los inventarios. Además puede enviar un email de confirmación con el resumen y el código del ticket.
+
+Flujo típico:
+- Validar que cada producto del carrito tenga stock suficiente.
+- Calcular el total de la compra.
+- Generar un `ticket` con un `code` único, `purchase_datetime`, `amount`, `purchaser` (email) y lista de `items`.
+- Reducir el stock de los productos comprados.
+- Vaciar o actualizar el carrito según la lógica definida.
+- Enviar correo de confirmación al comprador con el `code` del ticket.
+
+Estructura de ejemplo del ticket (JSON):
+
+```
+{
+    "code": "TCKT-<uuid>",
+    "purchase_datetime": "2026-02-16T12:34:56.000Z",
+    "amount": 123.45,
+    "purchaser": "usuario@ejemplo.com",
+    "items": [
+        { "productId": "607c191e810c19729de860ea", "title": "Producto A", "quantity": 2, "price": 49.99 }
+    ]
+}
+```
+
+Endpoints sugeridos (ejemplos):
+- `POST /api/carts/:cid/checkout` — Procesa la compra y devuelve el `ticket` creado.
+- `GET /api/tickets/:code` — Recupera el ticket por su código (opcional).
+
+Pruebas y validación:
+- Manual: crear un carrito con productos con stock suficiente, solicitar el `checkout` y verificar que:
+    - Se devuelve el `ticket` con los datos correctos.
+    - El stock en la base de datos se disminuyó correctamente.
+    - Se envió el email de confirmación (ver logs o inbox del `MAIL_USER`).
+- Automatizadas: tests que mockeen la base de datos y el envío de emails; aserciones sobre creación de ticket y actualización de stock.
+
+Notas de implementación recomendada:
+- Implementar la lógica de checkout en `cart.service.js` (por ejemplo, método `checkout(cartId, purchaserEmail)`).
+- Usar `mail.service.js` para enviar el email de confirmación.
+- Registrar tickets en una colección `tickets` (o la estructura que prefieras) para auditoría.
 
 ## 🤝 Estructura de Capas
 

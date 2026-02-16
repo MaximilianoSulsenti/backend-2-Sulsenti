@@ -1,5 +1,5 @@
 export default class ProductsController {
-    constructor(productService, io) {
+    constructor(productService, io = null) {
         this.productService = productService;
         this.io = io;
     } 
@@ -58,9 +58,11 @@ export default class ProductsController {
         try {
             const newProduct = await this.productService.createProduct(req.body);
 
-            // Emitimos actualización a sockets
+            // Emitimos actualización a sockets si io está disponible
+            if (this.io && typeof this.io.emit === "function") {
             const updatedList = await this.productService.getProducts();
             this.io.emit("productos_actualizados", updatedList);
+            }
 
             res.status(201).json({message: "Producto creado",payload: newProduct});
         } catch (error) {
@@ -75,8 +77,10 @@ export default class ProductsController {
             if (!updated)
                 return res.status(404).json({ msg: "Producto no encontrado" });
 
+            if (this.io && typeof this.io.emit === "function") {
             const updatedList = await this.productService.getProducts();
             this.io.emit("productos_actualizados", updatedList);
+            }
 
             res.status(200).json({message: "Producto actualizado",payload: updated});
         } catch (error) {
@@ -91,8 +95,10 @@ export default class ProductsController {
             if (!deleted)
                 return res.status(404).json({ msg: "Producto no encontrado" });
 
+            if (this.io && typeof this.io.emit === "function") {
             const updatedList = await this.productService.getProducts();
             this.io.emit("productos_actualizados", updatedList);
+            }
 
             res.status(200).json({message: "Producto eliminado", payload: deleted});
         } catch (error) {
