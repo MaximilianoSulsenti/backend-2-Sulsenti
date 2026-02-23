@@ -35,13 +35,13 @@ export default function createCartRouter() {
     router.post("/", passport.authenticate("current", { session: false }), authorize("user"), Controller.createCart);
 
     // Obtener carrito por ID
-    router.get("/:cartId", passport.authenticate("current", { session: false }), authorize("admin"), Controller.getCartById);
+    router.get("/:cartId", passport.authenticate("current", { session: false }), authorize("user", "admin"), Controller.getCartById);
 
     // Agregar producto al carrito
     router.post("/:cartId/product/:productId", passport.authenticate("current", { session: false }), authorize("user"), Controller.addProductToCart);
 
     //actualiza todos los productos del carrito
-    router.put("/:cartId", passport.authenticate("current", { session: false }), authorize("admin"), Controller.updateCartProducts);
+    router.put("/:cartId", passport.authenticate("current", { session: false }), authorize("user"), Controller.updateCartProducts);
 
     //actualizar cantidad de un producto en el carrito
     router.put("/:cartId/product/:productId", passport.authenticate("current", { session: false }), authorize("admin"),  Controller.updateProductQuantity);

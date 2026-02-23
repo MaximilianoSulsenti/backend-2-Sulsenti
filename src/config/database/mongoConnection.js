@@ -5,7 +5,13 @@ export default class mongoSingleton {
    static #instance;
 
    constructor(){
-      mongoose.connect(env.MONGO_URI);
+      
+      const uri = process.env.NODE_ENV === "test" ?
+       env.MONGO_URI_TEST : env.MONGO_URI_DEV;
+
+      mongoose.connect(uri);
+
+      console.log (`🟢 Mongo conectado a: ${process.env.NODE_ENV === "test" ? "DB_TEST" : "DB_DEV"}`);
    }
 
    static getInstance(){
