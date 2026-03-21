@@ -1,6 +1,5 @@
 export default class CreateUserDTO {
   constructor(body) {
-
     this.first_name =
       body.first_name ||
       body.firstName ||
@@ -18,6 +17,7 @@ export default class CreateUserDTO {
       body.mail;
 
     this.age = Number(body.age);
+    this.img = body.img || null;
 
     if (!this.first_name || !this.last_name || !this.email) {
       throw new Error("Datos de usuario incompletos");

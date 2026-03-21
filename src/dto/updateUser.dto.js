@@ -11,5 +11,13 @@ export default class UpdateUserDTO {
     if (body.age !== undefined) {
       this.age = body.age;
     }
+
+    if (body.img !== undefined) {
+      this.img = body.img;
+    }
+
+    // Garantiza que _id esté presente si existe
+    if (body._id) this._id = body._id;
+    if (body.id && !this._id) this._id = body.id;
   }
 }

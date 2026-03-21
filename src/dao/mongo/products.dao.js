@@ -30,4 +30,8 @@ export default class ProductsDAO {
     delete = async (id) => {
         return productModel.findByIdAndDelete(id);
     };
+
+    countProducts = async () => {
+        return productModel.countDocuments();
+    };
 }

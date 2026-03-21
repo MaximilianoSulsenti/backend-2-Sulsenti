@@ -40,4 +40,7 @@ export default class ProductService {
    return this.productsRepository.delete(id);
   }
 
+  countProducts() {
+    return this.productsRepository.countProducts();
+  }
 }

@@ -1,5 +1,6 @@
 import userModel from "../../models/user.model.js";
 
+
 export default class UsersDAO {
 
     getAll = async () => {
@@ -24,5 +25,10 @@ export default class UsersDAO {
 
     delete = async (uid) => {
         return userModel.findByIdAndDelete(uid);
+    };
+
+    // Nuevo método para contar usuarios
+    countUsers = async () => {
+        return userModel.countDocuments();
     };
 }

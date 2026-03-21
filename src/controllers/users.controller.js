@@ -90,4 +90,14 @@ export default class UsersController{
         }
     }
 
+    // Nuevo método para contar usuarios
+    countUsers = async (req, res) => {
+        try {
+            const count = await this.userService.countUsers();
+            res.json({ count });
+        } catch (error) {
+            res.status(500).json({ error: "Error al contar usuarios" });
+        }
+    }
+
 }

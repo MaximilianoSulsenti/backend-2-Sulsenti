@@ -6,5 +6,13 @@ export default class TicketService {
     async createTicket(data) {
         return await this.repository.createTicket(data);
     }
+
+    async countTickets() {
+        return await this.repository.countTickets();
+    }
+
+    async getAllTickets() {
+        return await this.repository.getAllTickets();
+    }
 }
 

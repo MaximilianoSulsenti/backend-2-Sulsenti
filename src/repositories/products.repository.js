@@ -26,4 +26,8 @@ export default class ProductsRepository {
   delete(id) {
     return this.dao.delete(id);
   }
+
+  countProducts() {
+    return this.dao.countProducts();
+  }
 }

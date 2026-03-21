@@ -26,4 +26,9 @@ export default class UsersRepository {
   deleteUser = async (uid) => {
     return await this.dao.delete(uid);
   };
+
+  // Nuevo método para contar usuarios
+  countUsers = async () => {
+    return await this.dao.countUsers();
+  };
 }

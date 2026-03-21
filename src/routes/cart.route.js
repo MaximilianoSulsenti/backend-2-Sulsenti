@@ -1,35 +1,25 @@
 import { Router } from "express";
 import CartsController from "../controllers/carts.controller.js";
-import CartsDAO from "../dao/mongo/carts.dao.js";
-import ProductsDAO from "../dao/mongo/products.dao.js";
-import TicketDAO from "../dao/mongo/ticket.dao.js";
-import CartService from "../services/cart.service.js";
-import CartsRepository from "../repositories/carts.repository.js";
-import ProductsRepository from "../repositories/products.repository.js";
-import TicketRepository from "../repositories/ticket.repository.js";
 import { authorize } from "../middlewares/auth.js";
 import passport from "passport";
 
-
-export default function createCartRouter() {
+export default function createCartRouter(cartService, productService, ticketService) {
     const router = Router();
 
-      // DAO
-    const cartsDAO = new CartsDAO();
-    const productsDAO = new ProductsDAO();
-    const ticketDAO = new TicketDAO();
-
-    // Repositories
-    const cartsRepository = new CartsRepository(cartsDAO);
-    const productsRepository = new ProductsRepository(productsDAO);
-    const ticketRepository = new TicketRepository(ticketDAO);
-   
-    // Services
-    const cartService = new CartService(cartsRepository, productsRepository, ticketRepository);
-    
     // Controller
-    const Controller = new CartsController(cartService);
+    const Controller = new CartsController(cartService, ticketService);
 
+
+    // Contar tickets (debe ir antes de /:cartId)
+    router.get("/tickets/count", passport.authenticate("current", { session: false }), authorize("admin"), Controller.countTickets);
+
+    // Listar todos los tickets (debe ir antes de /:cartId)
+    router.get(
+      "/tickets",
+      passport.authenticate("current", { session: false }),
+      authorize("admin"),
+      Controller.getAllTickets
+    );
 
     // Crear carrito
     router.post("/", passport.authenticate("current", { session: false }), authorize("user"), Controller.createCart);

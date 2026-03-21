@@ -42,5 +42,11 @@ export default function createUserRouter() {
        })(req, res, next);
      });
 
+     router.get("/count", 
+       passport.authenticate("current", { session: false }), 
+       authorize("admin"),
+       controller.countUsers
+     );
+
     return router;
 }

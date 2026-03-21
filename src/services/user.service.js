@@ -29,4 +29,9 @@ export default class UserService {
     async deleteUser(uid) {
         return await this.repository.deleteUser(uid);
     }
+
+    // Nuevo método para contar usuarios
+    async countUsers() {
+        return await this.repository.countUsers();
+    }
 }

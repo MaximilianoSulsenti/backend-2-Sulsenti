@@ -106,4 +106,13 @@ export default class ProductsController {
         }
     }
 
+    // Nuevo método para contar productos
+    countProducts = async (req, res) => {
+        try {
+            const count = await this.productService.countProducts();
+            res.json({ count });
+        } catch (error) {
+            res.status(500).json({ error: "Error al contar productos" });
+        }
+    }
 }

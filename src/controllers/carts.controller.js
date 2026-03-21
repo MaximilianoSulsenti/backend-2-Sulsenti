@@ -1,9 +1,10 @@
 export default class CartsController {
-    constructor(cartService) {
+    constructor(cartService, ticketService) {
         this.cartService = cartService;
+        this.ticketService = ticketService;
     }
 
-  createCart = async (req, res) => {
+    createCart = async (req, res) => {
         try {
             const cart = await this.cartService.createCart();
             res.status(201).json({ message: "Carrito creado", payload: cart });
@@ -12,7 +13,7 @@ export default class CartsController {
         }
     };
 
-    getCartById =  async (req, res) => {
+    getCartById = async (req, res) => {
         try {
             const cart = await this.cartService.getCartById(req.params.cartId);
 
@@ -28,41 +29,41 @@ export default class CartsController {
     addProductToCart = async (req, res) => {
         try {
             const { quantity } = req.body;
-        
+
             const cart = await this.cartService.addProductToCart(req.params.cartId, req.params.productId, quantity);
 
             if (!cart)
                 return res.status(404).json({ msg: "Carrito o producto no encontrado" });
 
-            res.status(200).json({message: "Producto agregado al carrito", payload: cart});
+            res.status(200).json({ message: "Producto agregado al carrito", payload: cart });
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
     };
 
     updateCartProducts = async (req, res) => {
-        try{
+        try {
             const cart = await this.cartService.updateCartProducts(req.params.cartId, req.body.products);
-            if(!cart)
-                return res.status(404).json({msg: "Carrito no encontrado"});
+            if (!cart)
+                return res.status(404).json({ msg: "Carrito no encontrado" });
 
-            res.status(200).json({message: "Carrito actualizado", payload: cart});
-        } catch (error){
-            res.status(500).json({error: error.message});
+            res.status(200).json({ message: "Carrito actualizado", payload: cart });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
         }
     };
 
     updateProductQuantity = async (req, res) => {
-        try{
-             const cart = await this.cartService.updateProductQuantity(req.params.cartId, req.params.productId, req.body.quantity); 
+        try {
+            const cart = await this.cartService.updateProductQuantity(req.params.cartId, req.params.productId, req.body.quantity);
 
-            if(!cart)
-                return res.status(404).json({msg: "Carrito no encontrado"});
+            if (!cart)
+                return res.status(404).json({ msg: "Carrito no encontrado" });
 
-            res.status(200).json({message: "Cantidad de producto actualizada", payload: cart});  
+            res.status(200).json({ message: "Cantidad de producto actualizada", payload: cart });
 
-        } catch (error){
-            res.status(500).json({error: error.message});
+        } catch (error) {
+            res.status(500).json({ error: error.message });
         }
     };
 
@@ -70,12 +71,12 @@ export default class CartsController {
         try {
             const cart = await this.cartService.deleteProductFromCart(req.params.cartId, req.params.productId);
             if (!cart)
-                return res.status(404).json({msg: "carrito no encontrado"});
+                return res.status(404).json({ msg: "carrito no encontrado" });
 
-            res.status(200).json ({message: "Producto eliminado del carrito", payload: cart});
+            res.status(200).json({ message: "Producto eliminado del carrito", payload: cart });
 
-        } catch (error){
-            res.status(500).json({error: error.message});
+        } catch (error) {
+            res.status(500).json({ error: error.message });
         }
     };
 
@@ -83,11 +84,11 @@ export default class CartsController {
         try {
             const cart = await this.cartService.clearCart(req.params.cartId);
             if (!cart)
-                return res.status(404).json({msg: "carrito no encontrado"});
+                return res.status(404).json({ msg: "carrito no encontrado" });
 
-            res.status(200).json ({message: "Carrito vaciado", payload: cart});
-        } catch (error){
-            res.status(500).json({error: error.message});
+            res.status(200).json({ message: "Carrito vaciado", payload: cart });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
         }
     };
 
@@ -112,5 +113,21 @@ export default class CartsController {
         }
     };
 
+    countTickets = async (req, res) => {
+        try {
+            const count = await this.ticketService.countTickets();
+            res.status(200).json({ count });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    };
 
+    getAllTickets = async (req, res) => {
+        try {
+            const tickets = await this.ticketService.getAllTickets();
+            res.status(200).json({ payload: tickets });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    };
 }

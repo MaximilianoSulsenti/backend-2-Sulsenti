@@ -16,11 +16,14 @@ export default function createProductRouter() {
 
   // GET productos con paginación, filtros y orden
     router.get("/", passport.authenticate("current", { session: false }), authorize("admin"), controller.getProducts);
-    
+    router.get("/count", 
+      passport.authenticate("current", { session: false }), 
+      authorize("admin"),
+      controller.countProducts
+    );
     router.get("/:productId", controller.getProductById);
     router.post("/", passport.authenticate("current", { session: false }), authorize("user", "admin"), controller.createProduct);
     router.put("/:productId", passport.authenticate("current", { session: false }), authorize("admin"), controller.updateProduct);
     router.delete("/:productId", passport.authenticate("current", { session: false }), authorize("admin"), controller.deleteProduct);
-
     return router;
 }
